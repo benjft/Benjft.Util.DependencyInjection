@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
-        <!-- NuGet Package Metadata -->
         <PackageId>Benjft.Util.DependencyInjection</PackageId>
         <Version>1.0.0</Version>
         <Authors>benjft</Authors>
@@ -19,9 +18,7 @@
         <PackageProjectUrl>https://github.com/benjft/Benjft.Util</PackageProjectUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-        <!-- GitHub Packages specific metadata -->
-        <!-- Required: match the package namespace with repository owner and repository name -->
+        
         <PackageId>Benjft.Util.DependencyInjection</PackageId>
     </PropertyGroup>
 
