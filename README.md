@@ -1,159 +1,238 @@
-﻿# Benjft.Util.DependencyInjection
+﻿[![CI](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml)
+[![Build number](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2FBenjft%2FBenjft.Util.DependencyInjection%2Factions%2Fruns%3Fper_page%3D1&query=$.workflow_runs[0].run_number&label=build%20number)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions)
+[![Coverage Status](https://coveralls.io/repos/github/benjft/Benjft.Util.DependencyInjection/badge.svg)](https://coveralls.io/github/benjft/Benjft.Util.DependencyInjection)
 
-A .NET library that simplifies dependency injection registration through attributes. This library allows you to register services with the Microsoft Dependency Injection container using simple attribute declarations on your classes, eliminating the need for manual registration code.
+# Benjft.Util.DependencyInjection
+
+Attribute-based registration for Microsoft.Extensions.DependencyInjection with support for:
+
+- Class annotations (self-registrations and interface/base mappings)
+- Static factory methods
+- Transient/Scoped/Singleton lifetimes
+- Keyed services (ServiceKey)
+- Deterministic registration ordering (Order)
+- Assembly scanning across your load context or specific assemblies
+
+Target framework: net9.0
 
 ## Installation
 
-```bash
-dotnet add package Benjft.Util.DependencyInjection
+Add a reference to the library in your application:
+- Project reference: reference the Benjft.Util.DependencyInjection project.
+- NuGet: `dotnet add package Benjft.Util.DependencyInjection` (if/when published).
+
+## Usage
+
+### 1) Annotate your types
+
+Self-registration (the type registers as its own service type):
+
+```csharp
+using Benjft.Util.DependencyInjection.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+
+[SingletonService]
+public class CacheProvider { }
+
+// Equivalent with explicit lifetime
+[Service(ServiceLifetime.Scoped)]
+public class RequestTracker { }
 ```
 
-## Features
+Map to an interface or base type:
 
-- Register services using attributes directly on implementation classes
-- Support for Transient, Scoped, and Singleton lifetimes
-- Define service implementations through attributes
-- Register services with a specific factory method
-- Support for keyed services
-- Order-based registration priority
+```csharp
+public interface IFoo { }
 
-## Basic Usage
+// Non-generic form
+[ImplementsService(typeof(IFoo), ServiceLifetime.Transient)]
+public class Foo : IFoo { }
 
-### Registering Services
+// Generic helper attributes
+[ImplementsScopedService<IFoo>]
+public class FooScoped : IFoo { }
 
-In your application startup code (e.g., Program.cs or Startup.cs):
+[ImplementsSingletonService<IFoo>]
+public class FooSingleton : IFoo { }
+```
+
+Keyed registrations (DI supports multiple registrations differentiated by a key):
+
+```csharp
+[SingletonService(ServiceKey = "k1")]
+public class SpecialCache : CacheProvider { }
+```
+
+Ordering (lower Order values are registered first):
+
+```csharp
+[ImplementsService(typeof(IFoo), ServiceKey = "first", Order = 0)]
+public class FooFirst : IFoo { }
+
+[ImplementsService(typeof(IFoo), ServiceKey = "second", Order = 10)]
+public class FooSecond : IFoo { }
+```
+
+### 2) Use static factory methods (optional)
+
+When you want DI to call a static factory:
+
+- For unkeyed registrations, the method must be assignable to `Func<IServiceProvider, object>`
+- For keyed registrations, the method must be assignable to `Func<IServiceProvider, object?, object>`
+
+Use the ServiceFactoryAttribute family to declare factories and configure lifetime, service type, key, and order.
+
+```csharp
+public interface IBar { }
+public class Bar : IBar { }
+
+public static class BarFactory
+{
+    // Registers IBar as Transient using a factory (non-keyed)
+    [TransientServiceFactory(typeof(IBar))]
+    public static object CreateBar(IServiceProvider sp) => new Bar();
+
+    // Registers IBar as Scoped using a keyed factory
+    [ScopedServiceFactory(typeof(IBar), ServiceKey = "k2")]
+    public static object CreateKeyedBar(IServiceProvider sp, object? key) => new Bar();
+}
+```
+
+Alternatively, you can place a factory method on the implementation type and reference it from a ServiceAttribute using `FactoryMethod`:
+
+```csharp
+public class Baz
+{
+    public static Baz Make(IServiceProvider sp) => new Baz();
+}
+
+[Service(FactoryMethod = nameof(Baz.Make), Lifetime = ServiceLifetime.Scoped)]
+public class Baz { }
+```
+
+If you also want to register against an interface/base type from a type-level attribute with a factory method, use ImplementsServiceAttribute:
+
+```csharp
+public interface IBaz { }
+
+public class Baz2 : IBaz
+{
+    public static IBaz Build(IServiceProvider sp) => new Baz2();
+}
+
+[ImplementsService(typeof(IBaz), Lifetime = ServiceLifetime.Singleton, FactoryMethod = nameof(Baz2.Build))]
+public class Baz2 : IBaz { /* ... */ }
+```
+
+### 3) Scan and register
+
+Choose one of the extension methods to register based on your scenario:
 
 ```csharp
 using Benjft.Util.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
-var builder = WebApplication.CreateBuilder(args);
+var services = new ServiceCollection();
 
-// Add services with attribute-based registration
-builder.Services.AddServicesFromAttributes();
+// A) Scan all assemblies visible to the current AssemblyLoadContext (default lifetime = Transient)
+services.AddServicesFromAttributes();
+
+// B) Scan a specific assembly
+services.AddServicesFromAttributes(typeof(SomeTypeFromTargetAssembly).Assembly);
+
+// C) Scan a set of assemblies
+services.AddServicesFromAttributes(new[]
+{
+    typeof(Foo).Assembly,
+    typeof(Bar).Assembly
+});
+
+// D) Scan everything currently loaded in the AppDomain and their references
+services.AddServicesFromAttributesInDomain();
 ```
 
-### Marking Classes as Services
-
-You can mark any class as a service using the attributes:
+You can override the default lifetime used when an attribute does not specify one:
 
 ```csharp
-// Register as a transient service
-[TransientService]
-public class MyTransientService
-{
-    // Implementation
-}
-
-// Register as a scoped service
-[ScopedService]
-public class MyScopedService
-{
-    // Implementation
-}
-
-// Register as a singleton service
-[SingletonService]
-public class MySingletonService
-{
-    // Implementation
-}
-
-// Using the base attribute with specified lifetime
-[Service(ServiceLifetime.Transient)]
-public class MyCustomService
-{
-    // Implementation
-}
+services.AddServicesFromAttributes(defaultLifetime: ServiceLifetime.Scoped);
 ```
 
-### Implementing Interfaces
+### Resolving keyed services
 
-Register a class as an implementation of an interface:
+In .NET 8/9 DI, you can resolve keyed services via the built-in APIs such as `GetRequiredKeyedService<T>(key)` (or equivalent methods/extensions available in your version).
+
+Example (if your environment provides the extension):
 
 ```csharp
-public interface IMyService
-{
-    void DoSomething();
-}
-
-[ImplementsService(typeof(IMyService))]
-public class MyServiceImplementation : IMyService
-{
-    public void DoSomething()
-    {
-        // Implementation
-    }
-}
+var provider = services.BuildServiceProvider();
+var fooK1 = provider.GetRequiredKeyedService<IFoo>("k1");
 ```
 
-### Using Factory Methods
+If your DI version doesn’t expose keyed retrieval extensions, you can still ensure keyed registrations were added by inspecting the ServiceCollection descriptors (as demonstrated in tests).
 
-Specify a factory method to create the service:
+## API reference summary
 
-```csharp
-[Service(FactoryMethod = nameof(Create))]
-public class MyFactoryService
-{
-    private MyFactoryService() { }
+Attributes for types:
+- ServiceAttribute (and TransientServiceAttribute, ScopedServiceAttribute, SingletonServiceAttribute)
+  - Lifetime (nullable): overrides the defaultLifetime passed into AddServicesFromAttributes
+  - FactoryMethod (string): name of a public static factory method on the declaring type
+  - ServiceKey (object?): registers as a keyed service
+  - Order (int): lower values register first
+- ImplementsServiceAttribute (and generic + lifetime-specific variants)
+  - ServiceType: interface/base type to register against
+  - Inherits all properties from ServiceAttribute (Lifetime, FactoryMethod, ServiceKey, Order)
 
-    public static MyFactoryService Create(IServiceProvider serviceProvider)
-    {
-        // Create and configure the service instance
-        return new MyFactoryService();
-    }
-}
-```
+Attributes for static factory methods:
+- ServiceFactoryAttribute (and Transient/Scoped/Singleton variants; generic convenience types exist)
+  - ServiceTypeOverride (Type?): register against a specified service type instead of the method’s return type
+  - Lifetime (nullable): overrides the defaultLifetime
+  - ServiceKey (object?): keyed registration
+  - Order (int)
 
-### Keyed Services
+Extension methods on IServiceCollection:
+- AddServicesFromAttributesInDomain(ServiceLifetime defaultLifetime = Transient)
+- AddServicesFromAttributes(ServiceLifetime defaultLifetime = Transient, AssemblyLoadContext? alc = null)
+- AddServicesFromAttributes(Assembly assembly, ServiceLifetime defaultLifetime = Transient)
+- AddServicesFromAttributes(IEnumerable<Assembly> assemblies, ServiceLifetime defaultLifetime = Transient)
+- GetServicesFromAttributes for Type/IEnumerable<Type> (if you need the descriptors without adding them)
 
-Register services with a key:
+## Error handling
 
-```csharp
-[Service(ServiceKey = "primary")]
-public class PrimaryService : IMyService
-{
-    // Implementation
-}
+The scanner throws descriptive exceptions derived from `DependencyInjectionAttributeException` when it encounters invalid annotations:
 
-[Service(ServiceKey = "secondary")]
-public class SecondaryService : IMyService
-{
-    // Implementation
-}
-```
+- InvalidServiceTypeException
+  - Thrown when the implementation type is not assignable to the specified service type, or the implementation is abstract.
+- InvalidFactoryMethodException (base for factory errors)
+  - FactoryMethodNotFoundException — named factory method not found on the type
+  - FactoryMethodNotStaticException — the factory method is not static
+  - FactoryMethodHasWrongSignatureException — factory method signature does not match required delegate
 
-## Advanced Usage
+Required signatures:
+- Unkeyed factory: `Func<IServiceProvider, object>`
+- Keyed factory: `Func<IServiceProvider, object?, object>`
 
-### Specifying Registration Order
+## Assembly scanning notes
 
-You can control the order in which services are registered:
+- `AddServicesFromAttributes()` discovers assemblies via the current contextual AssemblyLoadContext (or its default) and then includes their referenced assemblies.
+- `AddServicesFromAttributesInDomain()` starts from all assemblies loaded in the current AppDomain and includes their references.
+- For precise control and best performance, prefer scanning specific assemblies (single assembly or a curated list).
 
-```csharp
-[Service(Order = 1)]
-public class HighPriorityService
-{
-    // Implementation
-}
+## Examples from tests
 
-[Service(Order = 10)]
-public class LowPriorityService
-{
-    // Implementation
-}
-```
+The test suite includes examples for:
+- Self-registration via attributes
+- Interface-based registration
+- Keyed services (asserting descriptor presence)
+- Factory methods and their signatures
+- Failure cases using the InvalidOnly fixtures
 
-### Scanning Specific Assemblies
+To run tests:
 
-You can specify which assemblies to scan for service attributes:
-
-```csharp
-// Scan a specific assembly
-builder.Services.AddServicesFromAttributes(typeof(MyType).Assembly);
-
-// Scan multiple assemblies
-builder.Services.AddServicesFromAttributes(new[] { assembly1, assembly2 });
+```powershell
+# From the repository root
+ dotnet test Benjft.Util.DependencyInjection.sln
 ```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+See the LICENSE file at the repository root.
