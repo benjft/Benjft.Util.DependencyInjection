@@ -1,5 +1,6 @@
-﻿[![CI](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml)
-[![Build number](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2FBenjft%2FBenjft.Util.DependencyInjection%2Factions%2Fruns%3Fper_page%3D1&query=$.workflow_runs[0].run_number&label=build%20number)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions)
+﻿[![NuGet Version](https://img.shields.io/nuget/v/Benjft.Util.DependencyInjection.svg)](https://www.nuget.org/packages/Benjft.Util.DependencyInjection/)
+[![License](https://img.shields.io/github/license/benjft/Benjft.Util.svg)](LICENSE)
+[![CI](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml)
 [![Coverage Status](https://coveralls.io/repos/github/benjft/Benjft.Util.DependencyInjection/badge.svg)](https://coveralls.io/github/benjft/Benjft.Util.DependencyInjection)
 
 # Benjft.Util.DependencyInjection
