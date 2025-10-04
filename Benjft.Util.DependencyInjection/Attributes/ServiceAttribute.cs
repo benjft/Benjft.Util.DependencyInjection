@@ -3,7 +3,7 @@
 namespace Benjft.Util.DependencyInjection.Attributes;
 
 /// <summary>
-/// Base attribute to mark a class for automatic registration with the dependency injection container.
+/// Attribute to mark a class for automatic registration with the dependency injection container.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class ServiceAttribute() : Attribute() {
@@ -23,7 +23,10 @@ public class ServiceAttribute() : Attribute() {
 
     /// <summary>
     /// Gets or initializes the name of a static factory method to use for creating instances.
-    /// If specified, the factory method will be used instead of the default constructor.
+    /// If specified, the factory method will be used instead of the constructor.
+    ///
+    /// The factory method must be of type <c>Func&lt;IServiceProvider, object&gt;</c> for an unkeyed service,
+    /// or <c>Func&lt;IServiceProvider, object?, object&gt;</c> for a keyed service
     /// </summary>
     public string? FactoryMethod { get; init; }
 
