@@ -41,13 +41,12 @@ runs:
           --collect:"XPlat Code Coverage" \
           --logger "trx;LogFileName=test-results.trx"
       
-    - name: Upload coverage
-      if: ${{ inputs.upload-coverage }}
-      uses: ./.github/actions/upload-coverage
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
       with:
-        test-results-location: '**/TestResults/*.trx'
-        coverage-file: 'Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info'
-        coverage-format: 'lcov'
-        github-token: ${{ inputs.github-token }}
-        shell: ${{ inputs.shell }}
+        name: test-results
+        path: |
+          **/TestResults/*.trx
+          Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info
 

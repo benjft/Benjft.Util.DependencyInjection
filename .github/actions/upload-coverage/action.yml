@@ -23,12 +23,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: success() || failure()
+    - name: Download test results artifact
+      uses: actions/download-artifact@v4
       with:
         name: test-results
-        path: ${{ inputs.test-results-location }}
+        path: ./downloaded-test-results
 
     - name: Locate coverage file
       shell: ${{ inputs.shell }}
