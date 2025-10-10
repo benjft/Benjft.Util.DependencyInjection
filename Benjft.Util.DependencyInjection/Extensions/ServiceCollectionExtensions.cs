@@ -50,13 +50,13 @@ public static class ServiceCollectionExtensions {
         return assemblyList;
     }
 
-    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Adds services to the service collection from attributes in all assemblies that reference this assembly.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
     /// <returns>The service collection for chaining.</returns>
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddServicesFromAttributesInDomain(
         this IServiceCollection services,
         ServiceLifetime defaultLifetime = ServiceLifetime.Transient) {
@@ -69,16 +69,19 @@ public static class ServiceCollectionExtensions {
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
+    /// <param name="assemblyLoadContext">The assembly load context to load services from.
+    /// If null or unspecified, it first attempts the CurrentContextualReflectionContext,
+    /// then the context of this assembly, then finally the Default assembly load context</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddServicesFromAttributes(
         this IServiceCollection services,
         ServiceLifetime defaultLifetime = ServiceLifetime.Transient,
-        AssemblyLoadContext? alc = null) {
-        alc ??= AssemblyLoadContext.CurrentContextualReflectionContext
+        AssemblyLoadContext? assemblyLoadContext = null) {
+        assemblyLoadContext ??= AssemblyLoadContext.CurrentContextualReflectionContext
          ?? AssemblyLoadContext.GetLoadContext(typeof(ServiceCollectionExtensions).Assembly)
          ?? AssemblyLoadContext.Default;
 
-        var assemblies = GetAllReferencedAssemblies(alc.Assemblies);
+        var assemblies = GetAllReferencedAssemblies(assemblyLoadContext.Assemblies);
         return AddServicesFromAttributes(services, assemblies, defaultLifetime);
     }
 
