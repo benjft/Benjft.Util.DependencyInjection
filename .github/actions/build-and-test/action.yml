@@ -47,6 +47,6 @@ runs:
       with:
         name: test-results
         path: |
-          **/TestResults/*.trx
+          Benjft.Util.DependencyInjection.Tests/TestResults/test-results.trx
           Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info
 
