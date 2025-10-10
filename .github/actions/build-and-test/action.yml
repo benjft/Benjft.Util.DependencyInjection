@@ -5,6 +5,10 @@ inputs:
     description: 'Should the test coverage results be uploaded?'
     required: false
     default: false
+  github-token:
+    description: 'The GitHub token'
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
 runs:
   using: "composite"
   steps:
@@ -14,7 +18,7 @@ runs:
         dotnet-version: '9.0.x'
         source-url: https://nuget.pkg.github.com/benjft/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        NUGET_AUTH_TOKEN: ${{ inputs.github-token }}
 
     - name: Restore
       run: dotnet restore Benjft.Util.DependencyInjection.sln
@@ -38,4 +42,5 @@ runs:
         test-results-location: '**/TestResults/*.trx'
         coverage-file: 'Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info'
         coverage-format: 'lcov'
+        github-token: ${{ inputs.github-token }}
 
