@@ -1,10 +1,18 @@
 ﻿name: Build and Test
-
 on:
+  workflow_dispatch:
   push:
     branches: [ main, master ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
 
 jobs:
   build-and-test:
