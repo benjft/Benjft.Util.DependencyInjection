@@ -21,6 +21,7 @@ jobs:
         uses: ./.github/actions/build-and-test
         with:
           upload-coverage: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
   
       - name: Extract version from tag
         id: get_version
