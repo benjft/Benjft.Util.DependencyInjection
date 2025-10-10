@@ -16,6 +16,10 @@ inputs:
   github-token:
     description: 'The GitHub token'
     required: true
+  shell:
+    description: 'The shell to use'
+    required: false
+    default: bash
 runs:
   using: "composite"
   steps:
@@ -27,6 +31,7 @@ runs:
         path: ${{ inputs.test-results-location }}
 
     - name: Locate coverage file
+      shell: ${{ inputs.shell }}
       run: echo "COVERAGE_FILE=$(ls -1 ${{ inputs.coverage-file }} | head -n 1)" >> $GITHUB_ENV
 
     - name: Upload coverage to Coveralls

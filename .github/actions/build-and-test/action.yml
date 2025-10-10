@@ -8,6 +8,10 @@ inputs:
   github-token:
     description: 'The GitHub token'
     required: true
+  shell:
+    description: 'The shell to use'
+    required: false
+    default: bash
 runs:
   using: "composite"
   steps:
@@ -21,11 +25,14 @@ runs:
 
     - name: Restore
       run: dotnet restore Benjft.Util.DependencyInjection.sln
+      shell: ${{ inputs.shell }}
 
     - name: Build
       run: dotnet build Benjft.Util.DependencyInjection.sln --configuration Release --no-restore
+      shell: ${{ inputs.shell }}
 
     - name: Test with coverage (LCOV via XPlat Code Coverage)
+      shell: ${{ inputs.shell }}
       run: |
         dotnet test Benjft.Util.DependencyInjection.sln \
           --configuration Release \
@@ -42,4 +49,5 @@ runs:
         coverage-file: 'Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info'
         coverage-format: 'lcov'
         github-token: ${{ inputs.github-token }}
+        shell: ${{ inputs.shell }}
 
