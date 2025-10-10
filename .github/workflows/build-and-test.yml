@@ -7,46 +7,13 @@ on:
     branches: [ main, master ]
 
 jobs:
-  build-test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore
-        run: dotnet restore Benjft.Util.DependencyInjection.sln
-
-      - name: Build
-        run: dotnet build Benjft.Util.DependencyInjection.sln --configuration Release --no-restore
-
-      - name: Test with coverage (LCOV via XPlat Code Coverage)
-        run: |
-          dotnet test Benjft.Util.DependencyInjection.sln \
-            --configuration Release \
-            --no-build \
-            --settings tests.runsettings \
-            --collect:"XPlat Code Coverage" \
-            --logger "trx;LogFileName=test-results.trx"
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: test-results
-          path: "**/TestResults/*.trx"
-
-      - name: Locate coverage file
-        run: echo "COVERAGE_FILE=$(ls -1 Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info | head -n 1)" >> $GITHUB_ENV
-
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          format: lcov
-          file: ${{ env.COVERAGE_FILE }}
-          
+        uses: actions/checkout@v5
+        
+      - name: Build and Test
+        uses: ./.github/actions/build-and-test
+        with: 
+          upload-coverage: true
