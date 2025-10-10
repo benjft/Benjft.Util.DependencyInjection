@@ -90,3 +90,5 @@ jobs:
         tag_name: ${{ github.ref_name }}
         name: ${{ github.ref_name }}
         body: ${{ steps.rel_notes.outputs.body }}
+        prerelease: ${{ contains(github.ref_name, '-') }}
+        files: ./nupkgs/*.nupkg

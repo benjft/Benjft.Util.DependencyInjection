@@ -1,10 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#define JETBRAINS_ANNOTATIONS
+
+using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.Attributes;
 
 /// <summary>
 /// Attribute to mark a class for automatic registration with the dependency injection container.
 /// </summary>
+[MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class ServiceAttribute() : Attribute() {
     /// <summary>
