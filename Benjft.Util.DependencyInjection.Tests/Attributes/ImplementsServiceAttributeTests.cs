@@ -1,7 +1,6 @@
 ﻿namespace Benjft.Util.DependencyInjection.Tests.Attributes;
 
-public interface IThing {}
-public class Thing : IThing {}
+public interface IThing;
 
 public class ImplementsServiceAttributeTests
 {

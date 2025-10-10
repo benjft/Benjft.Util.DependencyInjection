@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using Benjft.Util.DependencyInjection.Attributes;
 using Benjft.Util.DependencyInjection.Exceptions;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.Extensions;
@@ -92,6 +93,7 @@ public static class ServiceCollectionExtensions {
     /// <param name="assembly">The assembly to scan for attributes.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
     /// <returns>The service collection for chaining.</returns>
+    [UsedImplicitly]
     public static IServiceCollection AddServicesFromAttributes(
         this IServiceCollection services,
         Assembly assembly,
@@ -255,7 +257,7 @@ public static class ServiceCollectionExtensions {
     private static void ValidateFactoryMethodExists(
         Type type,
         ServiceAttribute attribute,
-        [NotNull] MethodInfo? methodInfo) {
+        [System.Diagnostics.CodeAnalysis.NotNull] MethodInfo? methodInfo) {
         if (methodInfo == null) {
             throw new FactoryMethodNotFoundException(
                 $"Type {type.Name} does not contain a public static method named {attribute.FactoryMethod}.");

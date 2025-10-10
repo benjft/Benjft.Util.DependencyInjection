@@ -1,9 +1,4 @@
-﻿using System;
-using Benjft.Util.DependencyInjection.Attributes;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
-namespace Benjft.Util.DependencyInjection.Tests.Attributes;
+﻿namespace Benjft.Util.DependencyInjection.Tests.Attributes;
 
 public class ServiceFactoryAttributeTests
 {
@@ -39,7 +34,7 @@ public class ServiceFactoryAttributeTests
         var attr = new ServiceFactoryAttribute
         {
             ServiceKey = "k",
-            Order = 5
+            Order = 5,
         };
         Assert.Equal("k", attr.ServiceKey);
         Assert.Equal(5, attr.Order);

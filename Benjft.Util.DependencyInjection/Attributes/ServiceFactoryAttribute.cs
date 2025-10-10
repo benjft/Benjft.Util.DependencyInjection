@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.Attributes;
 
@@ -7,6 +8,7 @@ namespace Benjft.Util.DependencyInjection.Attributes;
 /// The method will be used to create instances of the service type when requested from the service provider.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
+[MeansImplicitUse]
 public class ServiceFactoryAttribute() : Attribute {
     /// <summary>
     /// Creates a new ServiceFactoryAttribute with a specified service type.
@@ -39,25 +41,25 @@ public class ServiceFactoryAttribute() : Attribute {
     /// Gets or initializes the service type that will be registered instead of the method return type.
     /// If null, the method return type will be used as the service type.
     /// </summary>
-    public Type? ServiceTypeOverride { get; init; } = null;
+    public Type? ServiceTypeOverride { get; }
 
     /// <summary>
     /// Gets or initializes the lifetime for the registered service.
     /// If null, the default lifetime specified in the extension method will be used.
     /// </summary>
-    public ServiceLifetime? Lifetime { get; init; } = null;
+    public ServiceLifetime? Lifetime { get; }
 
     /// <summary>
     /// Gets or initializes the service key for keyed service registration.
     /// If null, the service will be registered as a non-keyed service.
     /// </summary>
-    public object? ServiceKey { get; init; } = null;
+    public object? ServiceKey { get; init; }
 
     /// <summary>
     /// Gets or initializes the order in which services are registered when multiple implementations exist.
     /// Services with lower order values are registered first.
     /// </summary>
-    public int Order { get; init; } = 0;
+    public int Order { get; init; }
 }
 
 /// <summary>

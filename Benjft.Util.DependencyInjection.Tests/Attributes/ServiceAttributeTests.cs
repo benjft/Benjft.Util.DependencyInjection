@@ -13,8 +13,6 @@ public class ServiceAttributeTests
         Assert.True(usage.AllowMultiple);
     }
 
-    private class Dummy {}
-
     [Fact]
     public void Constructor_SetsLifetime_WhenLifetimeProvided()
     {

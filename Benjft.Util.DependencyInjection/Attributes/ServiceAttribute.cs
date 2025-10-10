@@ -10,7 +10,7 @@ namespace Benjft.Util.DependencyInjection.Attributes;
 /// </summary>
 [MeansImplicitUse]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class ServiceAttribute() : Attribute() {
+public class ServiceAttribute() : Attribute {
     /// <summary>
     /// Creates a new ServiceAttribute with a specified lifetime.
     /// </summary>
@@ -23,7 +23,7 @@ public class ServiceAttribute() : Attribute() {
     /// Gets the lifetime for the registered service.
     /// If null, the default lifetime specified in the extension method will be used.
     /// </summary>
-    public ServiceLifetime? Lifetime { get; } = null;
+    public ServiceLifetime? Lifetime { get; }
 
     /// <summary>
     /// Gets or initializes the name of a static factory method to use for creating instances.
@@ -44,7 +44,7 @@ public class ServiceAttribute() : Attribute() {
     /// Gets or initializes the order in which services are registered when multiple implementations exist.
     /// Services with lower order values are registered first.
     /// </summary>
-    public int Order { get; init; } = 0;
+    public int Order { get; init; }
 }
 
 /// <summary>

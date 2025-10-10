@@ -23,13 +23,13 @@ public class ServiceDescriptorWrapper(ServiceDescriptor serviceDescriptor, int o
     /// <summary>
     /// Gets the wrapped service descriptor.
     /// </summary>
-    public ServiceDescriptor ServiceDescriptor { get; init; } = serviceDescriptor;
+    public ServiceDescriptor ServiceDescriptor { get; } = serviceDescriptor;
 
     /// <summary>
     /// Gets the registration order for this service.
     /// Services with lower order values are registered first.
     /// </summary>
-    public int Order { get; init; } = order;
+    public int Order { get; } = order;
 
     /// <summary>
     /// Compares this wrapper to another wrapper for ordering purposes.
@@ -76,6 +76,7 @@ public class ServiceDescriptorWrapper(ServiceDescriptor serviceDescriptor, int o
         return 0;
     }
 
+    /// <inheritdoc />
     public int CompareTo(object? obj) {
         if (obj is ServiceDescriptorWrapper other) {
             return CompareTo(other);

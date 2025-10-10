@@ -9,9 +9,11 @@ public class ServiceCollectionExtensionsTests
         var types = new[]
         {
             typeof(TestFixtures.ValidOnly.FooImplSingleton),
-            typeof(TestFixtures.ValidOnly.FooSingletonAttr)
+            typeof(TestFixtures.ValidOnly.FooSingletonAttr),
         };
-        var descriptors = types.GetServicesFromAttributes(ServiceLifetime.Transient).ToArray();
+        // ReSharper disable once ConvertToConstant.Local
+        var defaultLifetime = ServiceLifetime.Transient;
+        var descriptors = types.GetServicesFromAttributes(defaultLifetime).ToArray();
         Assert.Equal(2, descriptors.Length);
         Assert.All(descriptors, d => Assert.Equal(ServiceLifetime.Singleton, d.Lifetime));
     }
@@ -53,9 +55,8 @@ public class ServiceCollectionExtensionsTests
     [Fact]
     public void GetServicesFromAttributes_ThrowsFactoryMethodNotFound_WhenFactoryMethodMissing()
     {
-        var ex = Assert.Throws<FactoryMethodNotFoundException>(() =>
-        {
-            var _ = typeof(TestFixtures.InvalidOnly.MissingFactoryHost).GetServicesFromAttributes().ToArray();
+        var ex = Assert.Throws<FactoryMethodNotFoundException>(() => {
+            _ = typeof(TestFixtures.InvalidOnly.MissingFactoryHost).GetServicesFromAttributes().ToArray();
         });
         Assert.Contains("does not contain", ex.Message);
     }
@@ -63,9 +64,8 @@ public class ServiceCollectionExtensionsTests
     [Fact]
     public void GetServicesFromAttributes_ThrowsInvalidFactoryMethod_WhenFactoryMethodIsInstance()
     {
-        var ex = Assert.Throws<InvalidFactoryMethodException>(() =>
-        {
-            var _ = typeof(TestFixtures.InvalidOnly.NonStaticFactory).GetServicesFromAttributes().ToArray();
+        var ex = Assert.Throws<InvalidFactoryMethodException>(() => {
+            _ = typeof(TestFixtures.InvalidOnly.NonStaticFactory).GetServicesFromAttributes().ToArray();
         });
         Assert.IsType<FactoryMethodNotStaticException>(ex.InnerException);
     }
@@ -73,9 +73,8 @@ public class ServiceCollectionExtensionsTests
     [Fact]
     public void GetServicesFromAttributes_ThrowsInvalidFactoryMethod_WhenFactorySignatureIsWrong()
     {
-        var ex = Assert.Throws<InvalidFactoryMethodException>(() =>
-        {
-            var _ = typeof(TestFixtures.InvalidOnly.WrongSignatureHost).GetServicesFromAttributes().ToArray();
+        var ex = Assert.Throws<InvalidFactoryMethodException>(() => {
+            _ = typeof(TestFixtures.InvalidOnly.WrongSignatureHost).GetServicesFromAttributes().ToArray();
         });
         Assert.Contains("Factory Method", ex.Message);
     }
@@ -83,9 +82,8 @@ public class ServiceCollectionExtensionsTests
     [Fact]
     public void GetServicesFromAttributes_ThrowsInvalidServiceType_WhenImplementationIsAbstract()
     {
-        var ex = Assert.Throws<InvalidServiceTypeException>(() =>
-        {
-            var _ = typeof(TestFixtures.InvalidOnly.AbstractBad).GetServicesFromAttributes().ToArray();
+        var ex = Assert.Throws<InvalidServiceTypeException>(() => {
+            _ = typeof(TestFixtures.InvalidOnly.AbstractBad).GetServicesFromAttributes().ToArray();
         });
         Assert.Contains("must not be an abstract", ex.Message);
     }
@@ -93,9 +91,8 @@ public class ServiceCollectionExtensionsTests
     [Fact]
     public void GetServicesFromAttributes_ThrowsInvalidServiceType_WhenImplementationNotAssignableToServiceType()
     {
-        var ex = Assert.Throws<InvalidServiceTypeException>(() =>
-        {
-            var _ = typeof(TestFixtures.InvalidOnly.BadServiceType).GetServicesFromAttributes().ToArray();
+        var ex = Assert.Throws<InvalidServiceTypeException>(() => {
+            _ = typeof(TestFixtures.InvalidOnly.BadServiceType).GetServicesFromAttributes().ToArray();
         });
         Assert.Contains("must be assignable", ex.Message);
     }
@@ -134,10 +131,10 @@ public class ServiceCollectionExtensionsTests
         var fooInterface = asm.GetType("Benjft.Util.DependencyInjection.TestFixtures.ValidOnly.IScanFoo")!;
         var reqGeneric = typeof(ServiceProviderServiceExtensions)
             .GetMethods()
-            .First(m => m.Name == "GetRequiredService" && m.IsGenericMethodDefinition);
+            .First(m => m is { Name: "GetRequiredService", IsGenericMethodDefinition: true });
         var reqSvc = reqGeneric.MakeGenericMethod(fooInterface);
-        var foo1 = reqSvc.Invoke(null, new object?[] { provider });
-        var foo2 = reqSvc.Invoke(null, new object?[] { provider });
+        var foo1 = reqSvc.Invoke(null, [provider]);
+        var foo2 = reqSvc.Invoke(null, [provider]);
         Assert.Same(foo1, foo2);
 
         // Verify descriptors include keyed (resolution via extension can vary across DI versions;
@@ -152,7 +149,7 @@ public class ServiceCollectionExtensionsTests
         var asm1 = typeof(TestFixtures.ValidOnly.Marker).Assembly;
         var asm2 = typeof(TestFixtures.ValidOnly.Marker).Assembly; // using same for simplicity
 
-        services.AddServicesFromAttributes(new[] { asm1, asm2 });
+        services.AddServicesFromAttributes([asm1, asm2]);
 
         // Expect at least two descriptors for IScanFoo due to duplicates allowed; we just assert >= 1
         var fooInterface = asm1.GetType("Benjft.Util.DependencyInjection.TestFixtures.ValidOnly.IScanFoo")!;
@@ -204,7 +201,7 @@ public class ServiceCollectionExtensionsTests
         using (alc.EnterContextualReflection()) {
             try
             {
-                var invalidAsm = alc.LoadFromAssemblyPath(invalidDll);
+                _ = alc.LoadFromAssemblyPath(invalidDll);
 
                 var services = new ServiceCollection();
                 Assert.ThrowsAny<DependencyInjectionAttributeException>(() => services.AddServicesFromAttributes());
@@ -224,7 +221,7 @@ public class ServiceCollectionExtensionsTests
     public static class KeyedWrongSignature
     {
         [SingletonServiceFactory(ServiceKey = "k1")]
-        public static object Create(IServiceProvider sp) => new object();
+        public static object Create(IServiceProvider sp) => new();
     }
 
     [Fact]
