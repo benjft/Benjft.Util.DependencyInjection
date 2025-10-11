@@ -8,4 +8,3 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
-solution: Benjft.Util.DependencyInjection.sln
