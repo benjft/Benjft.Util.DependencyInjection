@@ -1,17 +1,11 @@
-﻿using System;
-using Benjft.Util.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
-
-namespace Benjft.Util.DependencyInjection.Tests.Extensions;
+﻿namespace Benjft.Util.DependencyInjection.Tests.Extensions;
 
 public class ServiceDescriptorWrapperTests
 {
-    private static ServiceDescriptorWrapper Wrap(ServiceDescriptor sd, int order) =>
-        new ServiceDescriptorWrapper(sd, order);
+    private static ServiceDescriptorWrapper Wrap(ServiceDescriptor sd, int order) => new(sd, order);
 
-    private class A {}
-    private class B {}
+    private class A;
+    private class B;
 
     [Fact]
     public void CompareTo_SameReference_ReturnsZero()
@@ -83,7 +77,9 @@ public class ServiceDescriptorWrapperTests
     {
         var sd = ServiceDescriptor.Describe(typeof(A), typeof(A), ServiceLifetime.Transient);
         var w = Wrap(sd, 1);
-        Assert.Throws<ArgumentException>(() => { var _ = ((IComparable)w).CompareTo("not a wrapper"); });
+        Assert.Throws<ArgumentException>(() => {
+            _ = ((IComparable)w).CompareTo("not a wrapper");
+        });
     }
 
     [Fact]
@@ -92,8 +88,8 @@ public class ServiceDescriptorWrapperTests
         var sd = ServiceDescriptor.Describe(typeof(A), typeof(A), ServiceLifetime.Transient);
         var w = Wrap(sd, 1);
         var sd2 = ServiceDescriptor.Describe(typeof(B), typeof(B), ServiceLifetime.Transient);
-        var w2 = Wrap(sd2, 1);
-        var _ = ((IComparable)w).CompareTo(w2 as object);
+        object w2 = Wrap(sd2, 1);
+        _ = ((IComparable)w).CompareTo(w2);
     }
 
     [Fact]
@@ -101,7 +97,7 @@ public class ServiceDescriptorWrapperTests
     {
         var sd = ServiceDescriptor.Describe(typeof(A), typeof(A), ServiceLifetime.Singleton);
         var w = Wrap(sd, 7);
-        (ServiceDescriptor sdOut, int orderOut) = w;
+        var (sdOut, orderOut) = w;
         Assert.Same(sd, sdOut);
         Assert.Equal(7, orderOut);
     }

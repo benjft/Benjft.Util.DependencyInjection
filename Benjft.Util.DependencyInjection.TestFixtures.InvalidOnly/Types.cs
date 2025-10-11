@@ -1,26 +1,24 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Benjft.Util.DependencyInjection.Attributes;
-using Microsoft.Extensions.DependencyInjection;
 
 [assembly:ExcludeFromCodeCoverage]
 
 namespace Benjft.Util.DependencyInjection.TestFixtures.InvalidOnly;
 
-// Marker type to get this assembly
-public sealed class Marker {}
-
-public interface IBar {}
-public interface IFoo {}
+public interface IBar;
+public interface IFoo;
 
 [ImplementsService(typeof(IBar))]
-public abstract class AbstractBad : IBar {}
+public abstract class AbstractBad : IBar;
 
 [Service(FactoryMethod = nameof(NotStatic))]
 public class NonStaticFactory
 {
     public NonStaticFactory() {}
     public NonStaticFactory(IServiceProvider sp) {}
-    public NonStaticFactory NotStatic(IServiceProvider sp) => new NonStaticFactory();
+    #pragma warning disable CA1822
+    public NonStaticFactory NotStatic(IServiceProvider _) => new();
+    #pragma warning restore CA1822
 }
 
 public static class WrongSignatureHost
@@ -31,11 +29,8 @@ public static class WrongSignatureHost
 
 // Missing factory method referred by attribute
 [ImplementsService(typeof(IBar), FactoryMethod = "Create", Order = 10)]
-public class MissingFactoryHost
-{
-    public static object Wrong(IServiceProvider sp) => new object();
-}
+public class MissingFactoryHost;
 
 // Implementation type not assignable to the service type
 [ImplementsService(typeof(IBar))]
-public class BadServiceType : IFoo { }
+public class BadServiceType : IFoo;

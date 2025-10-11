@@ -1,0 +1,46 @@
+﻿name: 'Upload Coverage To Coveralls'
+description: 'Upload the test coverage results to Coveralls'
+inputs:
+  test-results-location:
+    description: 'The location of the test results file'
+    required: false
+    default: '**/*.trx'
+  coverage-file:
+    description: 'The location of the coverage file'
+    required: false
+    default: '**/coverage.info'
+  coverage-format:
+    description: 'The format of the coverage file'
+    required: false
+    default: 'lcov'
+  github-token:
+    description: 'The GitHub token'
+    required: true
+  shell:
+    description: 'The shell to use'
+    required: false
+    default: bash
+  test-results-artifact-name:
+    description: 'The name of the test results artifact'
+    required: false
+    default: test-results
+runs:
+  using: "composite"
+  steps:
+    - name: Download test results artifact
+      uses: actions/download-artifact@v5
+      with:
+        name: ${{ inputs.test-results-artifact-name }}
+
+    - name: Locate coverage file
+      shell: ${{ inputs.shell }}
+      run: echo "COVERAGE_FILE=$(ls -1 ${{ inputs.coverage-file }} | head -n 1)" >> $GITHUB_ENV
+
+    - name: Upload coverage to Coveralls
+      uses: coverallsapp/github-action@v2
+      continue-on-error: true
+      with:
+        github-token: ${{ inputs.github-token }}
+        format: ${{ inputs.coverage-format }}
+        file: ${{ env.COVERAGE_FILE }}
+

@@ -24,7 +24,7 @@ namespace Benjft.Util.DependencyInjection.Attributes;
     /// Creates a new ImplementsServiceAttribute with a specified service type.
     /// </summary>
     /// <param name="serviceType">The service type that this class implements.</param>
-    public ImplementsServiceAttribute(Type serviceType) : base() {
+    public ImplementsServiceAttribute(Type serviceType) {
         ServiceType = serviceType;
     }
 }

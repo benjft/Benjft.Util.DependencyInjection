@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using Benjft.Util.DependencyInjection.Attributes;
 using Benjft.Util.DependencyInjection.Exceptions;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.Extensions;
@@ -50,13 +51,13 @@ public static class ServiceCollectionExtensions {
         return assemblyList;
     }
 
-    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Adds services to the service collection from attributes in all assemblies that reference this assembly.
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
     /// <returns>The service collection for chaining.</returns>
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddServicesFromAttributesInDomain(
         this IServiceCollection services,
         ServiceLifetime defaultLifetime = ServiceLifetime.Transient) {
@@ -69,16 +70,19 @@ public static class ServiceCollectionExtensions {
     /// </summary>
     /// <param name="services">The service collection to add services to.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
+    /// <param name="assemblyLoadContext">The assembly load context to load services from.
+    /// If null or unspecified, it first attempts the CurrentContextualReflectionContext,
+    /// then the context of this assembly, then finally the Default assembly load context</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddServicesFromAttributes(
         this IServiceCollection services,
         ServiceLifetime defaultLifetime = ServiceLifetime.Transient,
-        AssemblyLoadContext? alc = null) {
-        alc ??= AssemblyLoadContext.CurrentContextualReflectionContext
+        AssemblyLoadContext? assemblyLoadContext = null) {
+        assemblyLoadContext ??= AssemblyLoadContext.CurrentContextualReflectionContext
          ?? AssemblyLoadContext.GetLoadContext(typeof(ServiceCollectionExtensions).Assembly)
          ?? AssemblyLoadContext.Default;
 
-        var assemblies = GetAllReferencedAssemblies(alc.Assemblies);
+        var assemblies = GetAllReferencedAssemblies(assemblyLoadContext.Assemblies);
         return AddServicesFromAttributes(services, assemblies, defaultLifetime);
     }
 
@@ -89,6 +93,7 @@ public static class ServiceCollectionExtensions {
     /// <param name="assembly">The assembly to scan for attributes.</param>
     /// <param name="defaultLifetime">The default lifetime to use for services that don't specify one.</param>
     /// <returns>The service collection for chaining.</returns>
+    [UsedImplicitly]
     public static IServiceCollection AddServicesFromAttributes(
         this IServiceCollection services,
         Assembly assembly,
@@ -252,7 +257,7 @@ public static class ServiceCollectionExtensions {
     private static void ValidateFactoryMethodExists(
         Type type,
         ServiceAttribute attribute,
-        [NotNull] MethodInfo? methodInfo) {
+        [System.Diagnostics.CodeAnalysis.NotNull] MethodInfo? methodInfo) {
         if (methodInfo == null) {
             throw new FactoryMethodNotFoundException(
                 $"Type {type.Name} does not contain a public static method named {attribute.FactoryMethod}.");

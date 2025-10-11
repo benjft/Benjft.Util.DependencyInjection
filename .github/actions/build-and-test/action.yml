@@ -1,0 +1,52 @@
+﻿name: 'Build and Test'
+description: 'Build the solution and run unit tests'
+inputs:
+  upload-coverage:
+    description: 'Should the test coverage results be uploaded?'
+    required: false
+    default: false
+  github-token:
+    description: 'The GitHub token'
+    required: true
+  shell:
+    description: 'The shell to use'
+    required: false
+    default: bash
+runs:
+  using: "composite"
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '9.0.x'
+        source-url: https://nuget.pkg.github.com/benjft/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ inputs.github-token }}
+
+    - name: Restore
+      run: dotnet restore Benjft.Util.DependencyInjection.sln
+      shell: ${{ inputs.shell }}
+
+    - name: Build
+      run: dotnet build Benjft.Util.DependencyInjection.sln --configuration Release --no-restore
+      shell: ${{ inputs.shell }}
+
+    - name: Test with coverage (LCOV via XPlat Code Coverage)
+      shell: ${{ inputs.shell }}
+      run: |
+        dotnet test Benjft.Util.DependencyInjection.sln \
+          --configuration Release \
+          --no-build \
+          --settings tests.runsettings \
+          --collect:"XPlat Code Coverage" \
+          --logger "trx;LogFileName=test-results.trx"
+      
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v4
+      if: success() || failure()
+      with:
+        name: test-results
+        path: |
+          Benjft.Util.DependencyInjection.Tests/TestResults/test-results.trx
+          Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info
+
