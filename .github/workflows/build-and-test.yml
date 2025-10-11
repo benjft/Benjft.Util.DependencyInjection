@@ -36,4 +36,4 @@ jobs:
         uses: ./.github/actions/upload-coverage
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          coverage-file: 'Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info'
+          coverage-file: '*/Benjft.Util.DependencyInjection.Tests/TestResults/*/coverage.info'
