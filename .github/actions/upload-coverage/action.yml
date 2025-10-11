@@ -34,7 +34,7 @@ runs:
 
     - name: Locate coverage file
       shell: ${{ inputs.shell }}
-      run: echo "COVERAGE_FILE=$(ls -1 ./${{ inputs.coverage-file }} | head -n 1)" >> $GITHUB_ENV
+      run: echo "COVERAGE_FILE=$(ls -1 /home/runner/work/Benjft.Util.DependencyInjection/${{ inputs.coverage-file }} | head -n 1)" >> $GITHUB_ENV
 
     - name: Upload coverage to Coveralls
       uses: coverallsapp/github-action@v2
