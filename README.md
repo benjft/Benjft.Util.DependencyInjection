@@ -1,7 +1,8 @@
 ﻿[![NuGet Version](https://img.shields.io/nuget/v/Benjft.Util.DependencyInjection.svg)](https://www.nuget.org/packages/Benjft.Util.DependencyInjection/)
 [![License](https://img.shields.io/github/license/benjft/Benjft.Util.svg)](LICENSE)
-[![CI](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/benjft/Benjft.Util.DependencyInjection/badge.svg)](https://coveralls.io/github/benjft/Benjft.Util.DependencyInjection)
+[![Coverage Status](https://img.shields.io/coverallsCoverage/github/benjft/Benjft.Util.DependencyInjection)](https://coveralls.io/github/benjft/Benjft.Util.DependencyInjection?branch=master)
+[![Build and Test](https://img.shields.io/github/actions/workflow/status/Benjft/Benjft.Util.DependencyInjection/build-and-test.yml?branch=master&label=tests)](https://github.com/benjft/Benjft.Util.DependencyInjection/actions/workflows/build-and-test.yml)
+[![Qodana](https://img.shields.io/github/actions/workflow/status/Benjft/Benjft.Util.DependencyInjection/qodana_code_quality.yml?branch=master&label=Qodana)](https://github.com/benjft/Benjft.Util.DependencyInjection/actions/workflows/qodana_code_quality.yml)
 
 # Benjft.Util.DependencyInjection
 
