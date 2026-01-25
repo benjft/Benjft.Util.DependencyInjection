@@ -2,12 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benjft.Util.DependencyInjection", "Benjft.Util.DependencyInjection\Benjft.Util.DependencyInjection.csproj", "{B4FA097C-3803-44CF-8AB5-D872C4CD4767}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benjft.Util.DependencyInjection.Tests", "Benjft.Util.DependencyInjection.Tests\Benjft.Util.DependencyInjection.Tests.csproj", "{118D6CF0-2FA1-4FB4-B744-2188A2DBEFDB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benjft.Util.DependencyInjection.TestFixtures.ValidOnly", "Benjft.Util.DependencyInjection.TestFixtures.ValidOnly\Benjft.Util.DependencyInjection.TestFixtures.ValidOnly.csproj", "{5C7D3E0F-3C27-4F7C-A3A8-3E0D9AF5B5A1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benjft.Util.DependencyInjection.TestFixtures.InvalidOnly", "Benjft.Util.DependencyInjection.TestFixtures.InvalidOnly\Benjft.Util.DependencyInjection.TestFixtures.InvalidOnly.csproj", "{A9B2A8C4-9F3B-4C8B-9130-F1AFED2C5B9E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,17 +12,5 @@ Global
 		{B4FA097C-3803-44CF-8AB5-D872C4CD4767}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4FA097C-3803-44CF-8AB5-D872C4CD4767}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4FA097C-3803-44CF-8AB5-D872C4CD4767}.Release|Any CPU.Build.0 = Release|Any CPU
-		{118D6CF0-2FA1-4FB4-B744-2188A2DBEFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{118D6CF0-2FA1-4FB4-B744-2188A2DBEFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{118D6CF0-2FA1-4FB4-B744-2188A2DBEFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{118D6CF0-2FA1-4FB4-B744-2188A2DBEFDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C7D3E0F-3C27-4F7C-A3A8-3E0D9AF5B5A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C7D3E0F-3C27-4F7C-A3A8-3E0D9AF5B5A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C7D3E0F-3C27-4F7C-A3A8-3E0D9AF5B5A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C7D3E0F-3C27-4F7C-A3A8-3E0D9AF5B5A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9B2A8C4-9F3B-4C8B-9130-F1AFED2C5B9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9B2A8C4-9F3B-4C8B-9130-F1AFED2C5B9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9B2A8C4-9F3B-4C8B-9130-F1AFED2C5B9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9B2A8C4-9F3B-4C8B-9130-F1AFED2C5B9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

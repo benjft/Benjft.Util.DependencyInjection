@@ -1,66 +1,48 @@
-﻿#define JETBRAINS_ANNOTATIONS
-
-using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.Attributes;
 
 /// <summary>
-/// Attribute to mark a class for automatic registration with the dependency injection container.
+/// Marks a class or method as a service to be registered with the service collection using <see cref="Benjft.Util.DependencyInjection.Extensions.ServiceExtensions.AddServicesFromAttributes">AddServicesFromAttributes</see>.
 /// </summary>
-[MeansImplicitUse]
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class ServiceAttribute() : Attribute {
+/// <param name="serviceType">
+/// The service type the target should be registered as.
+/// </param>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+public class ServiceAttribute(Type serviceType) : Attribute {
     /// <summary>
-    /// Creates a new ServiceAttribute with a specified lifetime.
+    /// Marks a class or method as a service to be registered with the service collection using <see cref="Benjft.Util.DependencyInjection.Extensions.ServiceExtensions.AddServicesFromAttributes">AddServicesFromAttributes</see>.
     /// </summary>
-    /// <param name="lifetime">The lifetime for the registered service.</param>
-    public ServiceAttribute(ServiceLifetime lifetime) : this() {
-        Lifetime = lifetime;
+    /// <param name="serviceType">
+    /// The service type the target should be registered as.
+    /// </param>
+    /// <param name="serviceLifetime">
+    /// The lifetime should the service have in the DI container.
+    /// </param>
+    public ServiceAttribute(Type serviceType, ServiceLifetime serviceLifetime) : this(serviceType) {
+        ServiceLifetime = serviceLifetime;
     }
     
     /// <summary>
-    /// Gets the lifetime for the registered service.
-    /// If null, the default lifetime specified in the extension method will be used.
+    /// The service type the target should be registered as.
     /// </summary>
-    public ServiceLifetime? Lifetime { get; }
-
+    public Type ServiceType { get; private set;} = serviceType;
+    
     /// <summary>
-    /// Gets or initializes the name of a static factory method to use for creating instances.
-    /// If specified, the factory method will be used instead of the constructor.
-    ///
-    /// The factory method must be of type <c>Func&lt;IServiceProvider, object&gt;</c> for an unkeyed service,
-    /// or <c>Func&lt;IServiceProvider, object?, object&gt;</c> for a keyed service
+    /// The lifetime should the service have in the DI container.
+    /// If null, the default lifetime when scanning assemblies will be used.
     /// </summary>
-    public string? FactoryMethod { get; init; }
-
+    public ServiceLifetime? ServiceLifetime { get; private set; }
+    
     /// <summary>
-    /// Gets or initializes the service key for keyed service registration.
-    /// If null, the service will be registered as a non-keyed service.
+    /// The order in which services should be added to the DI container.
+    /// Only relevant for when there are multiple services of the same service type as the last registered will be the
+    /// default for <see cref="IServiceProvider.GetService"/>
     /// </summary>
-    public object? ServiceKey { get; init; }
-
+    public int RegistrationOrder { get; set; } = 0;
+    
     /// <summary>
-    /// Gets or initializes the order in which services are registered when multiple implementations exist.
-    /// Services with lower order values are registered first.
+    /// The service key that identifies this service.
     /// </summary>
-    public int Order { get; init; }
+    public object? ServiceKey { get; set; } = null;
 }
-
-/// <summary>
-/// Attribute to mark a class for automatic registration as a transient service.
-/// A new instance will be created each time the service is requested.
-/// </summary>
-public class TransientServiceAttribute() : ServiceAttribute(ServiceLifetime.Transient);
-
-/// <summary>
-/// Attribute to mark a class for automatic registration as a scoped service.
-/// One instance will be created per dependency injection scope.
-/// </summary>
-public class ScopedServiceAttribute() : ServiceAttribute(ServiceLifetime.Scoped);
-
-/// <summary>
-/// Attribute to mark a class for automatic registration as a singleton service.
-/// A single instance will be created for the entire application lifetime.
-/// </summary>
-public class SingletonServiceAttribute() : ServiceAttribute(ServiceLifetime.Singleton);

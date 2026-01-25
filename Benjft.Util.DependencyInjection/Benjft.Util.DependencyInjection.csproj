@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
 
@@ -12,7 +12,7 @@
         <Description>Utility library for automatic dependency injection registration with attributes</Description>
         <PackageTags>dependency-injection;attributes;di;extensions</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+<!--        <PackageReadmeFile>README.md</PackageReadmeFile>-->
         <RepositoryUrl>https://github.com/benjft/Benjft.Util</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageProjectUrl>https://github.com/benjft/Benjft.Util</PackageProjectUrl>
@@ -20,15 +20,13 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         
         <PackageId>Benjft.Util.DependencyInjection</PackageId>
+        
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="../README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
 
 </Project>
