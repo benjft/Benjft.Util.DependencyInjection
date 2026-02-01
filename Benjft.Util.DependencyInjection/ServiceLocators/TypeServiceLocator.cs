@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Benjft.Util.DependencyInjection.Attributes;
+using Benjft.Util.DependencyInjection.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.ServiceLocators;
@@ -21,7 +22,7 @@ internal class TypeServiceLocator(ServiceLifetime defaultLifetime) : IServiceLoc
 
     private ServiceDescriptor GetServiceDescriptor(Type implementationType, ServiceAttribute attribute) {
         if (!implementationType.IsAssignableTo(attribute.ServiceType)) {
-            throw new Exception($"Implementation type {implementationType.Name} is not assignable to {attribute.ServiceType.Name}");
+            throw new InvalidImplementationTypeException(implementationType, attribute.ServiceType);
         }
 
         if (attribute.ServiceKey != null) {

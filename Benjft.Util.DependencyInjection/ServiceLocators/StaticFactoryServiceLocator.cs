@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Benjft.Util.DependencyInjection.Attributes;
+using Benjft.Util.DependencyInjection.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Benjft.Util.DependencyInjection.ServiceLocators;
@@ -15,22 +16,23 @@ internal class StaticFactoryServiceLocator(ServiceLifetime defaultLifetime) : IS
 
     private static IEnumerable<(MethodInfo factoryMethod, ServiceAttribute attribute)> GetDecoratedStaticMethodsInAssembly(Assembly assembly) {
         return from type in assembly.GetTypes()
-               from method in type.GetMethods(BindingFlags.Static)
+               from method in type.GetMethods()
+               where method.IsStatic
                from attribute in method.GetCustomAttributes<ServiceAttribute>()
                select (method, attribute);
     }
 
-    private ServiceDescriptor GetServiceDescriptor(MethodInfo factoryMethod, ServiceAttribute attribute) {
-        if (!factoryMethod.ReturnType.IsAssignableTo(attribute.ServiceType)) {
-            throw new Exception($"Factory method {factoryMethod.Name} return type {factoryMethod.ReturnType.Name} is not assignable to {attribute.ServiceType.Name}");
-        }
-
+    internal ServiceDescriptor GetServiceDescriptor(MethodInfo factoryMethod, ServiceAttribute attribute) {
         if (attribute.ServiceType.IsGenericTypeDefinition) {
-            throw new Exception("service factories are not supported for open generic types");
+            throw new RegistrationNotSupportedException("Service factories are not supported for open generic types");
+        }
+        
+        if (!factoryMethod.ReturnType.IsAssignableTo(attribute.ServiceType)) {
+            throw new InvalidImplementationTypeException(factoryMethod.ReturnType, attribute.ServiceType);
         }
         
         if (factoryMethod.IsGenericMethodDefinition) {
-            throw new Exception("Generic factory methods are not supported");
+            throw new RegistrationNotSupportedException("Generic factory methods are not supported");
         }
         
         var factoryDelegate = CreateFactoryDelegate(factoryMethod);
